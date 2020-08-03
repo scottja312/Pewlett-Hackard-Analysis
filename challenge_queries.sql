@@ -13,3 +13,71 @@ FROM current_emp as ce
 ORDER BY ce.emp_no;
 
 SELECT * FROM ret_titles
+
+-- Partition the duplicate data to show only most recent title per employee
+SELECT emp_no,
+ first_name,
+ last_name,
+to_date,
+title
+INTO recent_titles
+FROM
+ 	(SELECT emp_no,
+ 			first_name,
+ 			last_name,
+ 			to_date,
+ 			title, ROW_NUMBER() OVER
+ 			(PARTITION BY (emp_no)
+ 			ORDER BY to_date DESC) rn
+ 			FROM ret_titles
+ 			) tmp WHERE rn = 1
+ORDER BY emp_no;
+--SELECT * FROM recent_titles
+
+--Counting the number of employee per title
+SELECT COUNT (title), title
+INTO retiring_titles
+FROM recent_titles
+GROUP BY title
+ORDER BY COUNT DESC;
+SELECT * FROM retiring_titles
+
+-- Challenge Assignment:
+-- Deliverable 2: Create a list of employees eligible for potential mentorship program.
+SELECT e.emp_no,
+	e.first_name,
+	e.last_name,
+	e.birth_date,
+	de.from_date,
+	de.to_date,
+	ti.title
+INTO mentorship_elig
+FROM employees as e
+INNER JOIN dept_emp as de
+	ON (e.emp_no = de.emp_no)
+INNER JOIN titles as ti
+	ON (e.emp_no = ti.emp_no)
+WHERE (de.to_date = '9999-01-01')
+AND (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+ORDER BY e.emp_no;
+SELECT * FROM mentorship_elig
+
+-- Partition the duplicate data to show only most recent title per employee
+SELECT emp_no,
+ first_name,
+ last_name,
+to_date,
+title
+INTO recent_mentorship
+FROM
+ 	(SELECT emp_no,
+ 			first_name,
+ 			last_name,
+ 			to_date,
+ 			title, ROW_NUMBER() OVER
+ 			(PARTITION BY (emp_no)
+ 			ORDER BY to_date DESC) rn
+ 			FROM ret_titles
+ 			) tmp WHERE rn = 1
+ORDER BY emp_no;
+SELECT * FROM recent_mentorship
