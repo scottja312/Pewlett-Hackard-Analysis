@@ -1,12 +1,12 @@
-
----Begin of queries---
---A 1. Get names of employees within 1952.
+---Beginning of queries to determine retirement eligibility---
+--A 1. Get names of employees born within 1952.
 SELECT first_name, last_name
 FROM employees
 WHERE birth_date BETWEEN '1952-01-01' AND '1952-12-31';
 
----A 2. Count the number of employees retiring and produce table.
-SELECT COUNT (first_name)
+--A. 1a. Get names of employees based on a specific hiring date range and birth date range.
+-- Narrowing search for retirement eligibility.
+SELECT first_name, last_name
 FROM employees
 WHERE (birth_date BETWEEN '1952-01-01' AND '1955-12-31')
 AND (hire_date BETWEEN '1985-01-01' AND '1988-12-31');
@@ -25,20 +25,26 @@ SELECT first_name, last_name
 FROM employees
 WHERE birth_date BETWEEN '1955-01-01' AND '1955-12-31';
 
--- Remake new table by dropping retirement_info table.
+--A. 2. Count the number of employees retiring and produce table.
+SELECT COUNT (first_name)
+FROM employees
+WHERE (birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+AND (hire_date BETWEEN '1985-01-01' AND '1988-12-31');
+
+--Remake new table by dropping retirement_info table.
 DROP TABLE retirement_info;
 
--- 1: Create new table for retiring employees.
-SELECT emp_no, first_name, last_name
+--B. 1: Create new table for retiring employees.
+SELECT first_name, last_name
 INTO retirement_info
 FROM employees
 WHERE (birth_date BETWEEN '1952-01-01' AND '1955-12-31')
 AND (hire_date BETWEEN '1985-01-01' AND '1988-12-31');
 
---- 2. Check the new retirement table.
+--B. 2. Check the new retirement table.
 SELECT * FROM retirement_info
 
--- 3. Practice: join departments and dept_manager tables (old code using inner join).
+--B. 3. Practice: join departments and dept_manager tables (old code using inner join).
 --SELECT departments.dept_name,
      --dept_manager.emp_no,
      --dept_manager.from_date,
